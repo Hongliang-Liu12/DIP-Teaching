@@ -51,6 +51,46 @@ def point_guided_deformation(image, source_pts, target_pts, alpha=1.0, eps=1e-8)
     warped_image = np.array(image)
     ### FILL: 基于MLS or RBF 实现 image warping
 
+    # MLS
+    height = image.shape[0]
+    width = image.shape[1]
+
+    q = np.array(np.array(source_pts))
+    p = np.array(np.array(target_pts))
+    # 创建坐标轴，获取到这个点的坐标值（x,y）
+    gridX = np.arange(width, dtype=np.int16)
+    gridY = np.arange(height, dtype=np.int16)
+    x, y = np.meshgrid(gridX, gridY)
+
+
+    v = np.dstack((x, y))  # print(v[1,255]) output:[255,1]
+
+    n = len(p)  # 获取修改点的数量
+    print(type(p))
+    p = p.astype(np.float32).reshape(n, 1, 1, 2)  # 使p能与v相减，实现w_i的计算
+    q = q.astype(np.float32).reshape(n, 1, 1, 2)
+
+    # 计算w_i
+    w = 1.0 / (np.sum((p - v) ** 2, axis=-1) + eps) ** alpha
+    w_sum = np.sum(w, axis=0, keepdims=True)
+    w_norm = w / w_sum
+    print(w.shape)
+
+    p_star = np.sum(p * w_norm.reshape(-1, height, width, 1), axis=0)
+    q_star = np.sum(q * w_norm.reshape(-1, height, width, 1), axis=0)
+
+    # 计算新的坐标
+    new_coords = np.sum(w_norm[..., np.newaxis] * (q_star - p_star), axis=0) + v
+    new_x, new_y = new_coords[..., 0].astype(np.int32), new_coords[..., 1].astype(np.int32)
+
+    new_x = np.where(new_x < 0, 0, np.where(new_x >= width, width - 1, new_x))
+    new_y = np.where(new_y < 0, 0, np.where(new_y >= height, height - 1, new_y))
+
+    warped_image = np.zeros_like(image)
+
+    warped_image[y, x] = image[new_y, new_x]
+
+    
     return warped_image
 
 def run_warping():
