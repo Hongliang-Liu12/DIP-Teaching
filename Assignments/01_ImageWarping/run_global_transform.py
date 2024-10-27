@@ -32,8 +32,8 @@ def apply_transform(image, scale, rotation, translation_x, translation_y, flip_h
 
 
     translation_matrix = np.array([
-        [1, 0, translation_x],
-        [0, 1, translation_y]
+        [1, 0, translation_x*3],
+        [0, 1, translation_y*3]
     ], dtype=np.float32)
 
     transformed_image = cv2.warpAffine(src=rotate_image, M=translation_matrix, dsize=(width, height))
