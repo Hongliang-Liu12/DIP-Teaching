@@ -2,6 +2,7 @@ import gradio as gr
 from PIL import ImageDraw
 import numpy as np
 import torch
+import cv2
 
 # Initialize the polygon state
 def initialize_polygon():
@@ -109,6 +110,10 @@ def create_mask_from_points(points, img_h, img_w):
     ### FILL: Obtain Mask from Polygon Points. 
     ### 0 indicates outside the Polygon.
     ### 255 indicates inside the Polygon.
+
+    ### Ensure points are in the right format for cv2.fillPoly
+    points = points.reshape((-1, 1, 2)).astype(np.int32)
+    cv2.fillPoly(mask, [points], 255)
 
     return mask
 
