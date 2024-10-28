@@ -3,6 +3,7 @@ from PIL import ImageDraw
 import numpy as np
 import torch
 import cv2
+import torch.nn.functional as F
 
 # Initialize the polygon state
 def initialize_polygon():
@@ -131,11 +132,30 @@ def cal_laplacian_loss(foreground_img, foreground_mask, blended_img, background_
     Returns:
         torch.Tensor: The computed Laplacian loss.
     """
-    loss = torch.tensor(0.0, device=foreground_img.device)
+
+    # loss = torch.tensor(0.0, device=foreground_img.device)
     ### FILL: Compute Laplacian Loss with https://pytorch.org/docs/stable/generated/torch.nn.functional.conv2d.html.
     ### Note: The loss is computed within the masks.
-
+    # Define a Laplacian kernel
+    laplacian_kernel = torch.tensor([[0, 1, 0],
+                                     [1, -4, 1],
+                                     [0, 1, 0]], dtype=foreground_img.dtype, device=foreground_img.device).unsqueeze(0).unsqueeze(0)
+    
+    laplacian_kernel = laplacian_kernel.repeat(1, 3, 1, 1)  # Repeat for each channel
+    
+    # Apply convolution to get Laplacian features
+    foreground_laplacian = F.conv2d(foreground_img, laplacian_kernel, padding=1)
+    blended_laplacian = F.conv2d(blended_img, laplacian_kernel, padding=1)
+    
+    # Apply masks
+    masked_foreground_laplacian = foreground_laplacian * foreground_mask
+    masked_blended_laplacian = blended_laplacian * background_mask
+    
+    # Calculate the Laplacian loss
+    loss = F.mse_loss(masked_foreground_laplacian, masked_blended_laplacian, reduction='mean')
+    
     return loss
+
 
 # Perform Poisson image blending
 def blending(foreground_image_original, background_image_original, dx, dy, polygon_state):
