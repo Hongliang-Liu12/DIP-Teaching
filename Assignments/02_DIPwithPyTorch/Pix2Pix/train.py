@@ -9,6 +9,8 @@ from facades_dataset import FacadesDataset
 from FCN_network import FullyConvNetwork
 from torch.optim.lr_scheduler import StepLR
 
+os.chdir(r"E:\Git\DIP-Teaching\Assignments\02_DIPwithPyTorch\Pix2Pix")
+
 def tensor_to_image(tensor):
     """
     Convert a PyTorch tensor to a NumPy array suitable for OpenCV.
@@ -171,4 +173,5 @@ def main():
             torch.save(model.state_dict(), f'checkpoints/pix2pix_model_epoch_{epoch + 1}.pth')
 
 if __name__ == '__main__':
+    print(os.getcwd())
     main()

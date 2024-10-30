@@ -1,5 +1,5 @@
 FILE=facades
-URL=http://efrosgans.eecs.berkeley.edu/pix2pix/datasets/$FILE.tar.gz
+URL=https://efrosgans.eecs.berkeley.edu/pix2pix/datasets/facades.tar.gz
 TAR_FILE=./datasets/$FILE.tar.gz
 TARGET_DIR=./datasets/$FILE/
 mkdir -p $TARGET_DIR
