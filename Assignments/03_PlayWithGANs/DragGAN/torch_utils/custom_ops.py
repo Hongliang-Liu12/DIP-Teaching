@@ -28,14 +28,17 @@ verbosity = 'brief' # Verbosity level: 'none', 'brief', 'full'
 
 def _find_compiler_bindir():
     patterns = [
-        'C:/Program Files*/Microsoft Visual Studio/*/Professional/VC/Tools/MSVC/*/bin/Hostx64/x64',
-        'C:/Program Files*/Microsoft Visual Studio/*/BuildTools/VC/Tools/MSVC/*/bin/Hostx64/x64',
-        'C:/Program Files*/Microsoft Visual Studio/*/Community/VC/Tools/MSVC/*/bin/Hostx64/x64',
-        'C:/Program Files*/Microsoft Visual Studio */vc/bin',
+        # 'D:/Microsoft Visual Studio/*/Professional/VC/Tools/MSVC/*/bin/Hostx64/x64',
+        # 'D:/Microsoft Visual Studio/*/BuildTools/VC/Tools/MSVC/*/bin/Hostx64/x64',
+        # 'D:/Microsoft Visual Studio/*/Community/VC/Tools/MSVC/*/bin/Hostx64/x64',
+        # 'D:/Microsoft Visual Studio */vc/bin',
+        # 'D:/msys64/ucrt64/bin'
+        'D:/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64'
     ]
     for pattern in patterns:
         matches = sorted(glob.glob(pattern))
         if len(matches):
+            print("compile:",matches[-1])
             return matches[-1]
     return None
 
