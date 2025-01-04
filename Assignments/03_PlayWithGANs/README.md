@@ -13,3 +13,4 @@ See [作业03-Play_with_GANs.pptx](https://rec.ustc.edu.cn/share/705bfa50-6e53-1
 
 ### Result
 <img src="./last.gif" alt="alt text" width="400">
+<img src="./image.png" alt="alt text" width="400">
