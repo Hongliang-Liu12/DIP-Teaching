@@ -22,3 +22,16 @@ See [Pix2Pix subfolder](Pix2Pix/).
 ### Requirements:
 - 请自行环境配置，推荐使用[conda环境](https://docs.anaconda.com/miniconda/)
 - 按照模板要求写Markdown版作业报告
+
+---
+### Results:
+## data possion
+<img src="./data_poission/window.png" alt="alt text" width="400">
+<img src="./data_poission/result.png" alt="alt text" width="400">
+
+## Pix2Pix
+# Train result
+<img src="./Pix2Pix/train_results/epoch_795/result_5.png" alt="alt text" width="400">
+
+# Validation result
+<img src="./Pix2Pix/val_results/epoch_795/result_3.png" alt="alt text" width="400">
