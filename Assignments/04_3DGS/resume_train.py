@@ -419,3 +419,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# python train.py --colmap_dir ./data/colmap --checkpoint_dir ./checkpoints --resume ./checkpoints/checkpoint_000100.pt --num_epochs 100 --batch_size 2 --learning_rate 0.001 --device cuda
