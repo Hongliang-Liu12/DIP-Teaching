@@ -259,7 +259,7 @@ def parse_args():
                       help='Path to checkpoint to resume from')
     
     # Training parameters
-    parser.add_argument('--num_epochs', type=int, default=200,
+    parser.add_argument('--num_epochs', type=int, default=100,
                       help='Number of training epochs')
     parser.add_argument('--batch_size', type=int, default=1,
                       help='Training batch size')
