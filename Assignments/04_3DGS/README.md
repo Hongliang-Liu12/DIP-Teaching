@@ -146,25 +146,25 @@ The resume_train.py script provides a rendering interface, allowing you to promp
 python resume_train.py --colmap_dir ./data/chair --checkpoint_dir ./data/chair/checkpoints --resume ./data/chair/checkpoints/checkpoint_000180.pt --additional_epochs  80  --render_every 10         
 ```
 ## Results
-<center>
+<div align="center">
     <img src="./debug_rendering_000120.gif">
     <div>Epoch 120</div>
-</center>
+</div>
 <br>
-<center>
+<div align="center">
     <img src="./debug_rendering_000160.gif">
     <div>Epoch 160</div>
-</center>
+</div>
 <br>
-<center>
+<div align="center">
     <img src="./debug_rendering_000200.gif">
     <div>Epoch 200</div>
-</center>
+</div>
 <br>
-<center>
+<div align="center">
     <img src="./debug_rendering_000240.gif">
     <div>Epoch 240</div>
-</center>
+</div>
 
 
 ## Compare with the original 3DGS Implementation
@@ -186,31 +186,34 @@ The output is saved in the output folder and can be viewed with the following co
 
 
 
-<center>
-    <div align="center">
-        <img src="./gt00017.png" height=200>
-        <img src="./gt00026.png" height=200>
-        <img src="./gt00062.png" height=200>
-    </div>
+
+<div align="center">
+    <img src="./gt00017.png" height=200>
+    <img src="./gt00026.png" height=200>
+    <img src="./gt00062.png" height=200>
     <div>Ground truth</div>
-</center>
-<br>
-<center>
-    <div align="center">
-        <img src="./gt00017.png" height=200>
-        <img src="./gt00026.png" height=200>
-        <img src="./gt00062.png" height=200>
-    </div>
-    <div>Renders</div>
-</center>
+</div>
+
+
 <br>
 
-<center>
-    <div align="center">
-        <img src="./gt.gif" height=200>
-        <img src="./renders.gif" height=200>
-    </div>
+<div align="center">
+    <img src="./gt00017.png" height=200>
+    <img src="./gt00026.png" height=200>
+    <img src="./gt00062.png" height=200>
+    <div>Renders</div>
+</div>
+
+
+<br>
+
+
+<div align="center">
+    <img src="./gt.gif" height=200>
+    <img src="./renders.gif" height=200>
     <div>Ground truth (left) & Renders (right)</div>
-</center>
+</div>
+
+
 
 It can be observed that after 30,000 rounds of training, the rendered results have become extremely close to the real model, to the point where they are indistinguishable to the naked eye.
