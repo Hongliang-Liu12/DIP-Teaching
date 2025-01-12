@@ -6,7 +6,17 @@
 /Assignments/02_DIPwithPyTorch/Pix2Pix/val_list.txt
 /Assignments/02_DIPwithPyTorch/Pix2Pix/checkpoints
 
+
+/Assignments/03_PlayWithGANs/Pix2Pix_GAN/*
+!/Assignments/03_PlayWithGANs/Pix2Pix_GAN/GAN.py
+!/Assignments/03_PlayWithGANs/Pix2Pix_GAN/train.py
+
+
+
 /Assignments/04_3DGS/data
+/Assignments/04_3DGS/debug_rendering_000160.gif
+/Assignments/04_3DGS/debug_rendering_000200.gif
+/Assignments/04_3DGS/debug_rendering_000240.gif
 /Assignments/04_3DGS/colmap
 /Assignments/04_3DGS/ffmpeg-7.1-essentials_build
 /Assignments/04_3DGS/__pycache__
