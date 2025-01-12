@@ -147,45 +147,25 @@ python resume_train.py --colmap_dir ./data/chair --checkpoint_dir ./data/chair/c
 ```
 ## Results
 <center>
-    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
-    src="./debug_rendering_000120.gif">
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">Epoch 120</div>
+    <img src="./debug_rendering_000120.gif">
+    <div>Epoch 120</div>
 </center>
+<br>
 <center>
-    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
-    src="./debug_rendering_000160.gif">
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">Epoch 160</div>
+    <img src="./debug_rendering_000160.gif">
+    <div>Epoch 160</div>
 </center>
+<br>
 <center>
-    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
-    src="./debug_rendering_000200.gif">
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">Epoch 200</div>
+    <img src="./debug_rendering_000200.gif">
+    <div>Epoch 200</div>
 </center>
+<br>
 <center>
-    <img style="border-radius: 0.3125em;
-    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
-    src="./debug_rendering_000240.gif">
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">Epoch 240</div>
+    <img src="./debug_rendering_000240.gif">
+    <div>Epoch 240</div>
 </center>
+
 
 ## Compare with the original 3DGS Implementation
 Implementation of the original 3DGS using the [colab template](https://github.com/camenduru/gaussian-splatting-colab) provided by the user camenduru
@@ -212,10 +192,7 @@ The output is saved in the output folder and can be viewed with the following co
         <img src="./gt00026.png" height=200>
         <img src="./gt00062.png" height=200>
     </div>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">Ground truth</div>
+    <div>Ground truth</div>
 </center>
 <br>
 <center>
@@ -224,10 +201,7 @@ The output is saved in the output folder and can be viewed with the following co
         <img src="./gt00026.png" height=200>
         <img src="./gt00062.png" height=200>
     </div>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">Renders</div>
+    <div>Renders</div>
 </center>
 <br>
 
@@ -236,10 +210,7 @@ The output is saved in the output folder and can be viewed with the following co
         <img src="./gt.gif" height=200>
         <img src="./renders.gif" height=200>
     </div>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">Ground truth (left) & Renders (right)</div>
+    <div>Ground truth (left) & Renders (right)</div>
 </center>
 
 It can be observed that after 30,000 rounds of training, the rendered results have become extremely close to the real model, to the point where they are indistinguishable to the naked eye.
