@@ -27,7 +27,7 @@ See [Pix2Pix subfolder](Pix2Pix/).
 
 # DIP with PyTorch
 
-This repository is HongLiang Liu's  implementation of DIP with PyTorch
+This repository is HongLiang Liu's implementation of Assignment 2 - DIP with PyTorch
 
 ## Environment
 OS : Windows

@@ -72,3 +72,174 @@ python train.py --colmap_dir data/chair --checkpoint_dir data/chair/checkpoints
 
 ### Compare with the original 3DGS Implementation
 Since we use a pure PyTorch implementation, the training speed and GPU memory usage are far from satisfactory. Also, we do not implement some crucial parts like adaptive Gaussian densification scheme. Run the [original 3DGS implementation](https://github.com/graphdeco-inria/gaussian-splatting) with the same dataset to compare the results.
+
+# Implement Simplified 3D Gaussian Splatting
+This repository is HongLiang Liu's implementation of Assignment 4 - Implement Simplified 3D Gaussian Splatting
+
+## Environment
+OS : Windows
+
+Environment : conda environment DIP created in Assignment 1
+
+### 1.COLMAP
+Download the release version on [colmap](https://github.com/colmap/colmap)
+
+Choosing the right version, I choose [colmap-x64-windows-cuda.zip](https://github.com/colmap/colmap/releases/download/3.11.1/colmap-x64-windows-cuda.zip)
+
+Unzip the colmap-x64-windows-cuda.zip and add the bin directory to the system path environment variable.
+
+### 2.ffmpeg
+Visit the [FFmpeg Builds](https://www.gyan.dev/ffmpeg/builds/) download page
+
+Download [ffmpeg-7.1-essentials_build](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z)
+
+Unzip the .7z file and add the bin directory to the system path environment variable.
+
+Check for correct installation by typing
+```
+ffmpeg -version 
+```
+on the command line
+
+### 3.Pytorch3D
+Visit the [Pytorch3D releases](https://github.com/facebookresearch/pytorch3d/releases) page
+
+Download [Version 0.7.8](https://github.com/facebookresearch/pytorch3d/archive/refs/tags/V0.7.8.zip) to DIP environment site-packages directory
+
+Modify the setup.py file in the pyTorch3d directory:
+```
+extra_compile_args = {"cxx": ["-std=c++14"]}
+```
+to
+```
+extra_compile_args = {"cxx": []}
+```
+---
+Using the CUB included with the CUDA toolkit causes compilation errors. Download version [CUB 1.17](https://github.com/NVIDIA/cub/releases/tag/1.17.0) and add it to the environment variables.
+
+---
+
+In the x64 Native Tools Command Prompt, execute the following commands:
+```
+set DISTUTILS_USE_SDK=1
+set PYTORCH3D_NO_NINJA=1
+cd \yourpath\pytorch3d
+activate virtual environment
+python setup.py install
+```
+After successful installation, the last line of the prompt is:
+```
+Finished processing dependencies for pytorch3d==0.7.8
+```
+## Usage
+### Use Colmap to recover camera poses and a set of 3D points
+```
+python mvs_with_colmap.py --data_dir data/chair
+```
+### Run the following command to train the model
+```
+python train.py --colmap_dir data/chair --checkpoint_dir data/chair/checkpoints
+```
+### To continue training, use resume_train,py
+The resume_train.py script provides a rendering interface, allowing you to promptly monitor the overall training progress.
+```
+python resume_train.py --colmap_dir ./data/chair --checkpoint_dir ./data/chair/checkpoints --resume ./data/chair/checkpoints/checkpoint_000180.pt --additional_epochs  80  --render_every 10         
+```
+## Results
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
+    src="./debug_rendering_000120.gif">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">Epoch 120</div>
+</center>
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
+    src="./debug_rendering_000160.gif">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">Epoch 160</div>
+</center>
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
+    src="./debug_rendering_000200.gif">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">Epoch 200</div>
+</center>
+<center>
+    <img style="border-radius: 0.3125em;
+    box-shadow: 0 2px 4px 0 rgba(34,36,38,.12),0 2px 10px 0 rgba(34,36,38,.08);" 
+    src="./debug_rendering_000240.gif">
+    <br>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">Epoch 240</div>
+</center>
+
+## Compare with the original 3DGS Implementation
+Implementation of the original 3DGS using the [colab template](https://github.com/camenduru/gaussian-splatting-colab) provided by the user camenduru
+
+First upload the data of chair, including images and sparse.
+Then execute the following code
+
+```
+!python train.py -s /content/gaussian-splatting/chair
+```
+The output is saved in the output folder and can be viewed with the following code
+
+```
+!python render.py -m /content/gaussian-splatting/output/fab6d4ae-2
+!ffmpeg -framerate 3 -i /content/gaussian-splatting/output/fab6d4ae-2/train/ours_30000/renders/%05d.png -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -r 3 -pix_fmt yuv420p /content/renders.mp4
+!ffmpeg -framerate 3 -i /content/gaussian-splatting/output/fab6d4ae-2/train/ours_30000/gt/%05d.png -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2" -c:v libx264 -r 3 -pix_fmt yuv420p /content/gt.mp4 -y
+```
+
+
+
+<center>
+    <div align="center">
+        <img src="./gt00017.png" height=200>
+        <img src="./gt00026.png" height=200>
+        <img src="./gt00062.png" height=200>
+    </div>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">Ground truth</div>
+</center>
+<br>
+<center>
+    <div align="center">
+        <img src="./gt00017.png" height=200>
+        <img src="./gt00026.png" height=200>
+        <img src="./gt00062.png" height=200>
+    </div>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">Renders</div>
+</center>
+<br>
+
+<center>
+    <div align="center">
+        <img src="./gt.gif" height=200>
+        <img src="./renders.gif" height=200>
+    </div>
+    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">Ground truth (left) & Renders (right)</div>
+</center>
+
+It can be observed that after 30,000 rounds of training, the rendered results have become extremely close to the real model, to the point where they are indistinguishable to the naked eye.
