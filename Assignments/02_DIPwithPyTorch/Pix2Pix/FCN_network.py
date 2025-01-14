@@ -1,62 +1,85 @@
+import torch
 import torch.nn as nn
 
 class FullyConvNetwork(nn.Module):
 
     def __init__(self):
-        super().__init__()
-         # Encoder (Convolutional Layers)
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(3, 8, kernel_size=4, stride=2, padding=1),  # Input channels: 3, Output channels: 8
-            nn.BatchNorm2d(8),
+        super(FullyConvNetwork, self).__init__()
+        
+        # 编码器（卷积层）
+        self.encoder1 = nn.Sequential(
+            nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=2, padding=1),  # 输出通道数：64
+            nn.BatchNorm2d(64),
             nn.ReLU(inplace=True)
         )
-        ### FILL: add more CONV Layers
-        # 第二层卷积，输入8通道，输出16通道
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(8, 16, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(16),
+        self.encoder2 = nn.Sequential(
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=2, padding=1),  # 输出通道数：128
+            nn.BatchNorm2d(128),
             nn.ReLU(inplace=True)
         )
-
-        # 第三层卷积，输入16通道，输出32通道
-        self.conv3 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(32),
+        self.encoder3 = nn.Sequential(
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=2, padding=1),  # 输出通道数：256
+            nn.BatchNorm2d(256),
             nn.ReLU(inplace=True)
         )
-
-        # Decoder (Deconvolutional Layers)
-        ### FILL: add ConvTranspose Layers
-        ### None: since last layer outputs RGB channels, may need specific activation function
-        # 第一个反卷积层，输入32通道，输出16通道
-        self.deconv1 = nn.Sequential(
-            nn.ConvTranspose2d(32, 16, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(16),
+        self.encoder4 = nn.Sequential(
+            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, stride=2, padding=1),  # 输出通道数：512
+            nn.BatchNorm2d(512),
             nn.ReLU(inplace=True)
         )
-        # 第二个反卷积层，输入16通道，输出8通道
-        self.deconv2 = nn.Sequential(
-            nn.ConvTranspose2d(16, 8, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(8),
+        self.encoder5 = nn.Sequential(
+            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=3, stride=2, padding=1),  # 输出通道数：1024
+            nn.BatchNorm2d(1024),
             nn.ReLU(inplace=True)
         )
-        # 第三个反卷积层，输入8通道，输出3通道（恢复到RGB）
-        self.deconv3 = nn.Sequential(
-            nn.ConvTranspose2d(8, 3, kernel_size=4, stride=2, padding=1),
-            nn.Sigmoid()  # 输出RGB图像，确保值在[0, 1]之间
+        
+        # 解码器（反卷积层）
+        self.decoder1 = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=1024, out_channels=512, kernel_size=4, stride=2, padding=1),  # 输出通道数：512
+            nn.BatchNorm2d(512),
+            nn.ReLU(inplace=True)
+        )
+        self.decoder2 = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=1024, out_channels=256, kernel_size=4, stride=2, padding=1),  # 输出通道数：256
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True)
+        )
+        self.decoder3 = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=512, out_channels=128, kernel_size=4, stride=2, padding=1),   # 输出通道数：128
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True)
+        )
+        self.decoder4 = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=256, out_channels=64, kernel_size=4, stride=2, padding=1),    # 输出通道数：64
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True)
+        )
+        self.decoder5 = nn.Sequential(
+            nn.ConvTranspose2d(in_channels=128, out_channels=3, kernel_size=4, stride=2, padding=1),      # 输出通道数：3（RGB）
+            nn.Tanh()  # 使用 Tanh 激活函数将输出值限制在 [-1, 1] 之间
         )
 
     def forward(self, x):
-        # Encoder forward pass
-        x1 = self.conv1(x)  # 输出大小: [batch_size, 8, H/2, W/2]
-        x2 = self.conv2(x1)  # 输出大小: [batch_size, 16, H/4, W/4]
-        x3 = self.conv3(x2)  # 输出大小: [batch_size, 32, H/8, W/8]        
-        # Decoder forward pass
-        x4 = self.deconv1(x3)  # 输出大小: [batch_size, 16, H/4, W/4]
-        x5 = self.deconv2(x4)  # 输出大小: [batch_size, 8, H/2, W/2]
-        ### FILL: encoder-decoder forward pass
+        # 编码器前向传播
+        e1 = self.encoder1(x)  # 输出尺寸减半，通道数：64
+        e2 = self.encoder2(e1) # 进一步减半，通道数：128
+        e3 = self.encoder3(e2) # 进一步减半，通道数：256
+        e4 = self.encoder4(e3) # 进一步减半，通道数：512
+        e5 = self.encoder5(e4) # 进一步减半，通道数：1024
 
-        output = self.deconv3(x5)  # 输出大小: [batch_size, 3, H, W]      
-        
+        # 解码器前向传播
+        d1 = self.decoder1(e5)                # 上采样，通道数：512
+        d1 = torch.cat((d1, e4), dim=1)        # 跳跃连接，与编码器第五层连接，拼接后通道数：512 + 512 = 1024
+
+        d2 = self.decoder2(d1)                 # 上采样，通道数：256
+        d2 = torch.cat((d2, e3), dim=1)        # 跳跃连接，与编码器第四层连接，拼接后通道数：256 + 256 = 512
+
+        d3 = self.decoder3(d2)                 # 上采样，通道数：128
+        d3 = torch.cat((d3, e2), dim=1)        # 跳跃连接，与编码器第三层连接，拼接后通道数：128 + 128 = 256
+
+        d4 = self.decoder4(d3)                 # 上采样，通道数：64
+        d4 = torch.cat((d4, e1), dim=1)        # 跳跃连接，与编码器第二层连接，拼接后通道数：64 + 64 = 128
+
+        output = self.decoder5(d4)             # 最终上采样，恢复到原始尺寸，通道数：3
+
         return output
-    
