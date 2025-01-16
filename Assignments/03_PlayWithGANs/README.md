@@ -29,15 +29,7 @@ See [作业03-Play_with_GANs.pptx](https://rec.ustc.edu.cn/share/705bfa50-6e53-1
 
 ### DragGAN
 #### Auto Slim Face
-<center>
-<video width="320" height="240" controls>
-<source src="./slim_face.mp4" type="video/mp4">
-</video>
-</center>
+https://github.com/user-attachments/assets/f2edd1e0-08a3-4dbe-9451-c4c416507144
 
 #### Auto Close Mouth
-<center>
-<video width="320" height="240" controls>
-<source src="./close_mouth.mp4" type="video/mp4">
-</video>
-</center>
+https://github.com/user-attachments/assets/fcead837-8069-4d6a-9da8-6095ae1cb7a0
