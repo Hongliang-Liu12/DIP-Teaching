@@ -23,7 +23,8 @@ from viz import pickle_widget
 from viz import latent_widget
 from viz import drag_widget
 from viz import capture_widget
-
+import face_alignment
+import cv2
 #----------------------------------------------------------------------------
 
 class Visualizer(imgui_window.ImguiWindow):

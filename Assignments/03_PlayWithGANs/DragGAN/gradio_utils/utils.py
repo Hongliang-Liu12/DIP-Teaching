@@ -51,7 +51,7 @@ def draw_points_on_image(image,
     for point_key, point in points.items():
         if ((curr_point is not None and curr_point == point_key)
                 or highlight_all):
-            p_color = (255, 0, 0)
+            p_color = (0, 255, 0)
             t_color = (0, 0, 255)
 
         else:

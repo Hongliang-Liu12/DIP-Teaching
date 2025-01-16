@@ -32,6 +32,34 @@ cache_dir = args.cache_dir
 device = 'cuda'
 
 
+class LandmarkDetector:
+    def __init__(self):
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.landmark_type = face_alignment.LandmarksType._2D
+        self.model = face_alignment.FaceAlignment(self.landmark_type, device=self.device)
+    
+    def get_landmarks(self, image):
+        landmarks = self.model.get_landmarks(image)
+        return landmarks
+
+def process_image(state):
+    # Load image and convert to numpy array
+    image = np.array(state['images']['image_raw'])
+    
+    # Initialize landmark detector
+    detector = LandmarkDetector()
+    
+    # Get facial landmarks
+    landmarks_data = detector.get_landmarks(image)
+    
+    # Assume at least one face is detected
+    if landmarks_data and len(landmarks_data) > 0:
+        first_face_landmarks = landmarks_data[0]
+        state['landmarks'] = first_face_landmarks
+    else:
+        # Handle case where no faces are detected
+        pass
+
 def reverse_point_pairs(points):
     new_points = []
     for p in points:
@@ -101,12 +129,7 @@ def init_images(global_state):
     state['mask'] = np.ones((init_image.size[1], init_image.size[0]),
                             dtype=np.uint8)
     image = np.array(state['images']['image_raw'])
-    fa = face_alignment.FaceAlignment(
-        face_alignment.LandmarksType._2D,
-        device='cuda' if torch.cuda.is_available() else 'cpu',
-    )
-    points = fa.get_landmarks(image)[0]
-    state['landmarks'] = points
+    process_image(state)
 
     return global_state
 
@@ -236,28 +259,6 @@ with gr.Blocks() as app:
                             value=init_pkl,
                         )
 
-                # face-alignment
-                with gr.Row():
-
-                    with gr.Column(scale=1, min_width=10):
-                        gr.Markdown(value='Face', show_label=False)
-
-                    with gr.Column(scale=4, min_width=10):
-                        # with gr.Row(scale=4, min_width=10):
-                        form_face_alignment = gr.Button(
-                            "Face Alignment",
-                        )
-
-                        # with gr.Row(scale=4, min_width=10):
-                        close_mouth = gr.Button(
-                            "Close Mouth",
-                        )
-
-                        # with gr.Row(scale=4, min_width=10):
-                        close_eyes = gr.Button(
-                            "Close Eyes",
-                        )
-
 
                 # Latent
                 with gr.Row():
@@ -287,6 +288,27 @@ with gr.Blocks() as app:
                                     label='Latent space to optimize',
                                     show_label=False,
                                 )
+                                # face-alignment
+                with gr.Row():
+
+                    with gr.Column(scale=1, min_width=10):
+                        gr.Markdown(value='Face', show_label=False)
+
+                    with gr.Column(scale=4, min_width=10):
+                        # with gr.Row(scale=4, min_width=10):
+                        form_face_alignment = gr.Button(
+                            "Face Alignment",
+                        )
+
+                        # with gr.Row(scale=4, min_width=10):
+                        close_mouth = gr.Button(
+                            "Close Mouth",
+                        )
+
+                        # with gr.Row(scale=4, min_width=10):
+                        slim_face = gr.Button(
+                            "Slme face",
+                        )
 
                 # Drag
                 with gr.Row():
@@ -429,20 +451,6 @@ with gr.Blocks() as app:
 
         clear_state(global_state)
         return global_state, image_draw
-
-
-        image = np.array(form_image['image'])
-        image = Image.fromarray(np.uint8(image)).convert("RGBA")
-        image = np.array(image)
-        print(image.shape)
-        # exit()
-        
-        tmp = image[..., 3].copy()
-        for point in points:
-            cv2.circle(image, (int(point[0]), int(point[1])), 1, (255, 0, 0), -1)
-        image[..., 3] = tmp
-
-        return Image.fromarray(image)
 
     form_face_alignment.click(
         on_click_show_landmarks,
@@ -621,7 +629,7 @@ with gr.Blocks() as app:
                     to_pil=True)
 
                 if step_idx % global_state['draw_interval'] == 0:
-                    print('Current Source:')
+                    # print('Current Source:')
                     for key_point, p_i, t_i in zip(valid_points, p_to_opt,
                                                    t_to_opt):
                         global_state["points"][key_point]["start_temp"] = [
@@ -938,19 +946,41 @@ with gr.Blocks() as app:
     )
 
     def close_your_mouth(global_state):
+        # 获取面部关键点
         points = global_state['landmarks']
-        up_lip = [62, 63, 64]
-        low_lip = [68, 67, 66]
+        
+        # 定义上唇和下唇的关键点索引（假设landmarks是从0到67）
+        up_lip = [50, 52 ,49, 53]
+        low_lip = [58, 56, 59, 55]
+        
+        # 清空或初始化global_state['points']
+        global_state['points'] = {}
+        
+        # 计算每个点对的中间位置
         for i in range(len(up_lip)):
-            global_state['points'][i] = {'start': points[up_lip[i] - 1].astype(np.int64), 'target': points[low_lip[i] - 1].astype(np.int64)}
+            up_point = points[up_lip[i]].astype(np.int64)
+            low_point = points[low_lip[i]].astype(np.int64)
+            mid_point = (up_point + low_point) // 2
+            
+            # 将上唇点向中间位置移动
+            global_state['points'][i] = {'start': up_point, 'target': mid_point}
+            # 将下唇点向中间位置移动
+            global_state['points'][i + len(up_lip)] = {'start': low_point, 'target': mid_point}
+        
+        # 绘制点对到图像上
         image_raw = draw_points_on_image(global_state['images']['image_raw'], global_state['points'])
+        
+        # 生成最终图像，并添加水印
         image_draw = Image.fromarray(add_watermark_np(np.array(image_raw)))
+        
+        # 将处理后的图像保存到global_state中
         if global_state is not None:
             global_state['images']['image_show'] = image_draw
+        
+        # 返回global_state和处理后的图像
         return global_state, image_draw
 
-        
-        return global_state, image_draw
+    
 
     close_mouth.click(
         close_your_mouth,
@@ -958,26 +988,57 @@ with gr.Blocks() as app:
         outputs=[global_state, form_image]
     )
 
-    def close_your_eyes(global_state):
+
+    def slim_your_face(global_state):
+        # 获取面部关键点
         points = global_state['landmarks']
-        up_eye = [38, 39, 44, 45, 3, 6, 9, 11, 14]
-        low_eye = [42, 41, 48, 47, 3, 6, 9, 11, 14]
-        for i in range(len(up_eye)):
-            global_state['points'][i] = {'start': points[up_eye[i] - 1].astype(np.int64), 'target': points[low_eye[i] - 1].astype(np.int64)}
+
+        # 定义原始面部轮廓点的索引（假设这些索引对应脸的轮廓）
+        original_face_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+        # 定义目标面部轮廓点的索引，调整这些点的位置以实现瘦脸效果
+        # 这里假设我们通过向内移动一些点来达到瘦脸效果
+        target_face_points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+        # 调整目标点的位置，例如向内移动一些点
+        for i in range(len(original_face_points)):
+            # 获取原始点
+            original_point = points[original_face_points[i]].astype(np.int64)
+            # 调整目标点的位置，例如向内移动x坐标
+            target_point = points[target_face_points[i]].astype(np.int64)
+            # 这里可以根据需要调整目标点的位置
+            # 例如，减少x坐标的值以向内移动点
+            if i<9 :
+                target_point[0] = target_point[0] + 20  # 调整x坐标以瘦脸
+            else :
+                target_point[0] = target_point[0] - 20  # 调整x坐标以瘦脸
+            # 将点对存储到global_state['points']中
+            global_state['points'][i] = {'start': original_point, 'target': target_point}
+
+        # 绘制点对到图像上
         image_raw = draw_points_on_image(global_state['images']['image_raw'], global_state['points'])
+
+        # 生成最终图像，并添加水印
         image_draw = Image.fromarray(add_watermark_np(np.array(image_raw)))
+
+        # 将处理后的图像保存到global_state中
         if global_state is not None:
             global_state['images']['image_show'] = image_draw
+
+        # 返回global_state和处理后的图像
         return global_state, image_draw
 
-        
-        return global_state, image_draw
 
-    close_eyes.click(
-        close_your_eyes,
+
+    slim_face.click(
+        slim_your_face,
         inputs=[global_state],
         outputs=[global_state, form_image]
-    )
+    )   
+
+
+
+
 
 gr.close_all()
 app.queue(concurrency_count=3, max_size=20)
